@@ -99,7 +99,7 @@ Save, commit, and your new quotes load instantly.
 *A personal development book for everyday people in Southeast Asia.*
 
 **Author:** A.B. Mustikin  
-**Website:** [mustikin.zo.space](https://mustikin.zo.space)  
+**Website:** [mustik.in](https://mustik.in/unshakable)  
 **Book:** Amazon (ASIN: B0G3PXRS9Y) | Singapore signed copies at mustik.in
 
 ---
