@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unshakable You — Quote Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --gold-dim: #7A6230;
+    --ink: #0D0D0D;
+    --cream: #F5EFE0;
+    --warm-white: #FAF7F2;
+    --charcoal: #1A1A1A;
+    --muted: #6B6355;
+    --surface: #111010;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--surface);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 5rem;
+    color: var(--cream);
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  .wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(0.75rem, 2vw, 0.95rem);
+    font-weight: 300;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    font-weight: 900;
+    color: var(--warm-white);
+    line-height: 1.1;
+  }
+  .header .sub {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Pillar pills ── */
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1.4rem;
+    max-width: 620px;
+    width: 100%;
+  }
+  .pill {
+    border: 1px solid var(--gold-dim);
+    background: transparent;
+    color: var(--gold-dim);
+    padding: 0.38rem 0.95rem;
+    border-radius: 999px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.73rem;
+    letter-spacing: 0.09em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+  }
+  .pill:hover { border-color: var(--gold); color: var(--gold); }
+  .pill.active { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+
+  /* ── Format row ── */
+  .format-row {
+    display: flex;
+    gap: 0.45rem;
+    margin-bottom: 1.6rem;
+  }
+  .fmt-btn {
+    border: 1px solid #2A2520;
+    background: transparent;
+    color: var(--muted);
+    padding: 0.32rem 0.85rem;
+    border-radius: 3px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .fmt-btn.active, .fmt-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── Canvas wrap ── */
+  .canvas-wrap {
+    width: 100%;
+    max-width: 520px;
+    position: relative;
+  }
+  canvas {
+    width: 100%;
+    display: block;
+    border-radius: 3px;
+    box-shadow: 0 24px 72px rgba(0,0,0,0.7);
+  }
+
+  /* ── Quote text under canvas ── */
+  .quote-panel {
+    max-width: 520px;
+    width: 100%;
+    margin-top: 1.1rem;
+    border-left: 2px solid var(--gold-dim);
+    padding: 0.85rem 1.1rem;
+    background: rgba(201,168,76,0.03);
+  }
+  .quote-panel .qt {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.98rem;
+    font-style: italic;
+    color: var(--cream);
+    line-height: 1.65;
+  }
+  .quote-panel .ptag {
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-top: 0.45rem;
+    font-weight: 500;
+  }
+
+  /* ── Actions ── */
+  .actions {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1.3rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn-main {
+    background: var(--gold);
+    color: var(--ink);
+    border: none;
+    padding: 0.72rem 1.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+  .btn-main:hover { background: var(--gold-light); }
+  .btn-outline {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold-dim);
+    padding: 0.72rem 1.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: border-color 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--gold); }
+
+  /* ── Divider ── */
+  .divider {
+    width: 36px; height: 1px;
+    background: #2A2520;
+    margin: 2rem auto;
+  }
+
+  /* ── Caption ── */
+  .caption-area {
+    max-width: 520px;
+    width: 100%;
+  }
+  .caption-area h3 {
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.55rem;
+  }
+  .caption-box {
+    background: #0D0C0A;
+    border: 1px solid #222018;
+    border-radius: 3px;
+    padding: 0.95rem 1rem;
+    font-size: 0.83rem;
+    color: var(--muted);
+    line-height: 1.72;
+    min-height: 90px;
+    white-space: pre-wrap;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .copy-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  .copy-btn {
+    background: transparent;
+    border: none;
+    color: var(--gold-dim);
+    font-size: 0.7rem;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-family: 'DM Sans', sans-serif;
+    transition: color 0.2s;
+  }
+  .copy-btn:hover { color: var(--gold); }
+  .counter {
+    font-size: 0.68rem;
+    color: #333;
+    letter-spacing: 0.06em;
+  }
+
+  footer {
+    margin-top: 3.5rem;
+    font-size: 0.65rem;
+    color: #282420;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="wordmark">Unshakable You</div>
+  <h1>Quote Generator</h1>
+  <p class="sub">5-Step Identity Reset Framework · No internet required</p>
+</div>
+
+<div class="pill-row" id="pillars">
+  <button class="pill active" data-pillar="all">All Pillars</button>
+  <button class="pill" data-pillar="See It">See It</button>
+  <button class="pill" data-pillar="Name It">Name It</button>
+  <button class="pill" data-pillar="Shape It">Shape It</button>
+  <button class="pill" data-pillar="Live It">Live It</button>
+  <button class="pill" data-pillar="Protect It">Protect It</button>
+</div>
+
+<div class="format-row">
+  <button class="fmt-btn active" data-fmt="square">Square 1:1</button>
+  <button class="fmt-btn" data-fmt="portrait">Portrait 4:5</button>
+  <button class="fmt-btn" data-fmt="story">Story 9:16</button>
+</div>
+
+<div class="canvas-wrap">
+  <canvas id="c" width="1080" height="1080"></canvas>
+</div>
+
+<div class="quote-panel">
+  <div class="qt" id="qDisplay">Press Generate to get your first quote.</div>
+  <div class="ptag" id="pDisplay"></div>
+</div>
+
+<div class="actions">
+  <button class="btn-main" id="genBtn">✦ Generate</button>
+  <button class="btn-outline" id="dlBtn">↓ Download PNG</button>
+</div>
+
+<div class="divider"></div>
+
+<div class="caption-area">
+  <h3>Caption · IG / TikTok / Threads / X</h3>
+  <div class="caption-box" id="capBox">Caption will appear here.</div>
+  <div class="copy-row">
+    <button class="copy-btn" id="copyBtn">Copy Caption</button>
+    <span class="counter" id="seenCount"></span>
+  </div>
+</div>
+
+<footer>Unshakable You · A.B. Mustikin</footer>
+
+<script>
+// ── QUOTES (loaded from quotes.json at runtime, or embedded below as fallback) ──
+let QUOTES = [];
+let filtered = [];
+let currentPillar = 'all';
+let currentFmt = 'square';
+let currentQ = null;
+let seen = {};  // pillar → set of used indices
+
+const FORMATS = {
+  square:  { w: 1080, h: 1080 },
+  portrait:{ w: 1080, h: 1350 },
+  story:   { w: 1080, h: 1920 }
+};
+
+// ── LOAD QUOTES ──
+async function loadQuotes() {
+  try {
+    const res = await fetch('quotes.json');
+    QUOTES = await res.json();
+  } catch {
+    // Embedded fallback — a small selection so the tool works even if fetch fails
+    QUOTES = [
+      { pillar:"See It",     quote:"You can't change what you refuse to look at. See it clearly first — that's where it starts.", caption:"Awareness isn't weakness. It's the first act of courage. Before Next Me can exist, Old Me has to be seen honestly. What's one thing you've been avoiding looking at? 👁️ #UnshakableYou #SeeIt #IdentityReset #PersonalGrowth #NextMe" },
+      { pillar:"Name It",    quote:"Unnamed things have power over you. The moment you name it, you take the wheel.", caption:"There's a reason therapists always ask 'what are you feeling?' Naming the thing — the fear, the pattern, the belief — is how you stop being controlled by it. Name it. #UnshakableYou #NameIt #IdentityReset #EmotionalIntelligence #NextMe" },
+      { pillar:"Shape It",   quote:"Every small choice is a vote for Next Me. You don't need a big leap — just the next right vote.", caption:"You're not trying to become someone new overnight. You're casting votes. One action at a time. What vote can you cast today? #UnshakableYou #ShapeIt #CastAVote #NextMe #IdentityReset" },
+      { pillar:"Live It",    quote:"Never Zero. Even on the hard days — one small thing keeps the streak alive.", caption:"You don't need a perfect day. You need a Never Zero day. One push-up. One page. One kind word to yourself. Keep the chain unbroken. #UnshakableYou #LiveIt #NeverZero #Consistency #IdentityReset" },
+      { pillar:"Protect It", quote:"Guard your energy like it's the only currency you have. Because it is.", caption:"You can earn more money. You can't earn back a drained identity. Know who fills you up and who slowly empties you. Choose accordingly. #UnshakableYou #ProtectIt #EnergyManagement #Boundaries #Unshakable" }
+    ];
+  }
+  updateFiltered();
+  initCanvas();
+}
+
+// ── FILTER ──
+function updateFiltered() {
+  filtered = currentPillar === 'all'
+    ? QUOTES
+    : QUOTES.filter(q => q.pillar === currentPillar);
+}
+
+// ── PICK QUOTE (no repeat until exhausted) ──
+function pickQuote() {
+  const key = currentPillar;
+  if (!seen[key]) seen[key] = new Set();
+  let pool = filtered.filter((_, i) => !seen[key].has(i));
+  if (pool.length === 0) { seen[key] = new Set(); pool = filtered; }
+  const idx = Math.floor(Math.random() * pool.length);
+  const original = QUOTES.indexOf(pool[idx]);
+  seen[key].add(original);
+  return pool[idx];
+}
+
+// ── PILLAR PILLS ──
+document.getElementById('pillars').addEventListener('click', e => {
+  const btn = e.target.closest('.pill');
+  if (!btn) return;
+  document.querySelectorAll('.pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentPillar = btn.dataset.pillar;
+  updateFiltered();
+});
+
+// ── FORMAT ──
+document.querySelectorAll('.fmt-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.fmt-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    currentFmt = b.dataset.fmt;
+    if (currentQ) drawQuote(currentQ);
+  });
+});
+
+// ── GENERATE ──
+document.getElementById('genBtn').addEventListener('click', () => {
+  if (!filtered.length) return;
+  currentQ = pickQuote();
+  document.getElementById('qDisplay').textContent = currentQ.quote;
+  document.getElementById('pDisplay').textContent = `✦  ${currentQ.pillar}`;
+  document.getElementById('capBox').textContent = currentQ.caption;
+  updateCounter();
+  drawQuote(currentQ);
+});
+
+function updateCounter() {
+  const key = currentPillar;
+  const total = filtered.length;
+  const usedCount = seen[key] ? seen[key].size : 0;
+  document.getElementById('seenCount').textContent = `${usedCount} / ${total} shown`;
+}
+
+// ── DOWNLOAD ──
+document.getElementById('dlBtn').addEventListener('click', () => {
+  if (!currentQ) return;
+  const link = document.createElement('a');
+  const slug = currentQ.pillar.toLowerCase().replace(/\s/g,'-');
+  link.download = `unshakable-${slug}-${currentFmt}-${Date.now()}.png`;
+  link.href = document.getElementById('c').toDataURL('image/png');
+  link.click();
+});
+
+// ── COPY ──
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const text = document.getElementById('capBox').textContent;
+  if (!text || text === 'Caption will appear here.') return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = 'Copy Caption', 1800);
+  });
+});
+
+// ── DRAW ──
+function drawQuote(data) {
+  const canvas = document.getElementById('c');
+  const fmt = FORMATS[currentFmt];
+  canvas.width = fmt.w;
+  canvas.height = fmt.h;
+  canvas.style.aspectRatio = `${fmt.w} / ${fmt.h}`;
+
+  const ctx = canvas.getContext('2d');
+  const W = fmt.w, H = fmt.h;
+
+  // Background
+  const bg = ctx.createRadialGradient(W*0.28, H*0.22, 0, W*0.5, H*0.5, W*0.95);
+  bg.addColorStop(0, '#201C14');
+  bg.addColorStop(0.45, '#100F0C');
+  bg.addColorStop(1, '#060605');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Grain
+  addNoise(ctx, W, H);
+
+  // Gold border lines
+  const lTop = H * 0.115;
+  const lBot = H * 0.885;
+  drawLine(ctx, W*0.08, lTop, W*0.92, lTop);
+  drawLine(ctx, W*0.08, lBot, W*0.92, lBot);
+
+  // Corner ornaments
+  orn(ctx, W*0.08, lTop, 'tl');
+  orn(ctx, W*0.92, lTop, 'tr');
+  orn(ctx, W*0.08, lBot, 'bl');
+  orn(ctx, W*0.92, lBot, 'br');
+
+  // Subtle center glow
+  const glow = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, W*0.45);
+  glow.addColorStop(0, 'rgba(201,168,76,0.04)');
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, W, H);
+
+  // Pillar label
+  ctx.font = `300 ${W*0.021}px 'DM Sans', sans-serif`;
+  ctx.fillStyle = '#C9A84C';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '0.15em';
+  ctx.fillText(`✦  ${(data.pillar || '').toUpperCase()}  ✦`, W/2, H*0.215);
+
+  // Thin rule
+  ctx.strokeStyle = '#2C2516';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(W*0.37, H*0.238); ctx.lineTo(W*0.63, H*0.238);
+  ctx.stroke();
+
+  // Quote text
+  const quote = data.quote || '';
+  const fs = quoteFontSize(quote.length, W);
+  ctx.font = `italic ${fs}px 'Playfair Display', serif`;
+  ctx.fillStyle = '#F5EFE0';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '0';
+  wrapText(ctx, quote, W/2, H*0.5 - (fs*0.3), W*0.78, fs * 1.48);
+
+  // Author line
+  ctx.font = `300 ${W*0.018}px 'DM Sans', sans-serif`;
+  ctx.fillStyle = '#7A6230';
+  ctx.textAlign = 'center';
+  ctx.fillText('— A.B. Mustikin · Unshakable You', W/2, H*0.815);
+
+  // Bottom wordmark
+  ctx.font = `300 ${W*0.016}px 'Cormorant Garamond', serif`;
+  ctx.fillStyle = '#3A3020';
+  ctx.letterSpacing = '0.22em';
+  ctx.fillText('UNSHAKABLEYOU', W/2, H*0.928);
+}
+
+function quoteFontSize(len, W) {
+  if (len < 55)  return W * 0.066;
+  if (len < 90)  return W * 0.056;
+  if (len < 130) return W * 0.048;
+  if (len < 170) return W * 0.042;
+  return W * 0.037;
+}
+
+function wrapText(ctx, text, x, startY, maxW, lineH) {
+  const words = text.split(' ');
+  const lines = [];
+  let line = '';
+  for (const w of words) {
+    const test = line ? line + ' ' + w : w;
+    if (ctx.measureText(test).width > maxW && line) {
+      lines.push(line); line = w;
+    } else { line = test; }
+  }
+  if (line) lines.push(line);
+  const totalH = (lines.length - 1) * lineH;
+  const yStart = startY - totalH / 2;
+  lines.forEach((l, i) => ctx.fillText(l, x, yStart + i * lineH));
+}
+
+function drawLine(ctx, x1, y, x2) {
+  const g = ctx.createLinearGradient(x1, y, x2, y);
+  g.addColorStop(0, 'transparent');
+  g.addColorStop(0.18, '#C9A84C');
+  g.addColorStop(0.82, '#C9A84C');
+  g.addColorStop(1, 'transparent');
+  ctx.strokeStyle = g;
+  ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x2, y); ctx.stroke();
+}
+
+function orn(ctx, x, y, pos) {
+  ctx.strokeStyle = '#5A4820';
+  ctx.lineWidth = 1.5;
+  const s = 16;
+  ctx.beginPath();
+  if (pos==='tl'){ctx.moveTo(x,y+s);ctx.lineTo(x,y);ctx.lineTo(x+s,y);}
+  if (pos==='tr'){ctx.moveTo(x-s,y);ctx.lineTo(x,y);ctx.lineTo(x,y+s);}
+  if (pos==='bl'){ctx.moveTo(x,y-s);ctx.lineTo(x,y);ctx.lineTo(x+s,y);}
+  if (pos==='br'){ctx.moveTo(x-s,y);ctx.lineTo(x,y);ctx.lineTo(x,y-s);}
+  ctx.stroke();
+}
+
+function addNoise(ctx, W, H) {
+  const imgData = ctx.getImageData(0, 0, W, H);
+  const d = imgData.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const n = (Math.random() - 0.5) * 22;
+    d[i]   = Math.min(255, Math.max(0, d[i]   + n));
+    d[i+1] = Math.min(255, Math.max(0, d[i+1] + n));
+    d[i+2] = Math.min(255, Math.max(0, d[i+2] + n));
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+// ── PLACEHOLDER ──
+function initCanvas() {
+  const canvas = document.getElementById('c');
+  canvas.width = 1080; canvas.height = 1080;
+  const ctx = canvas.getContext('2d');
+  const W = 1080, H = 1080;
+  const bg = ctx.createRadialGradient(W*0.3,H*0.3,0,W*0.5,H*0.5,W*0.9);
+  bg.addColorStop(0,'#201C14'); bg.addColorStop(1,'#060605');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+  addNoise(ctx,W,H);
+  drawLine(ctx,W*0.08,H*0.115,W*0.92);
+  drawLine(ctx,W*0.08,H*0.885,W*0.92);
+  orn(ctx,W*0.08,H*0.115,'tl'); orn(ctx,W*0.92,H*0.115,'tr');
+  orn(ctx,W*0.08,H*0.885,'bl'); orn(ctx,W*0.92,H*0.885,'br');
+  ctx.font=`300 ${W*0.02}px 'DM Sans',sans-serif`;
+  ctx.fillStyle='#3A3020'; ctx.textAlign='center';
+  ctx.fillText('✦  UNSHAKABLE YOU  ✦', W/2, H*0.215);
+  ctx.font=`italic ${W*0.05}px 'Playfair Display',serif`;
+  ctx.fillStyle='#1E1A10';
+  ctx.fillText('Select a pillar. Generate.', W/2, H*0.5);
+  ctx.font=`300 ${W*0.016}px 'Cormorant Garamond',serif`;
+  ctx.fillStyle='#2A2010'; ctx.letterSpacing='0.22em';
+  ctx.fillText('UNSHAKABLEYOU', W/2, H*0.928);
+  document.getElementById('seenCount').textContent = `${QUOTES.length} quotes loaded`;
+}
+
+loadQuotes();
+</script>
+</body>
+</html>
